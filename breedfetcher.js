@@ -1,4 +1,71 @@
+
 const request = require('request');
+
+// Check if the user provided a breed name as a command-line argument
+if (process.argv.length < 3) {
+  console.error('Please provide a breed name as a command-line argument.');
+  process.exit(1);
+}
+
+//access the breedname in url search
+const breedName = process.argv[2];
+
+// Construct the API request URL with the specified breed name
+const apiUrl = `https://api.thecatapi.com/v1/breeds/search?q=${encodeURIComponent(breedName)}`;
+
+// Make the API request
+request(apiUrl, function (error, response, body) {
+  if (error) {
+    console.error('Error:', error);
+    return;
+  }
+
+  //creates an object
+  const data = JSON.parse(body);
+
+  // Check if the breed was found, if nothing 
+  if (data.length === 0) {
+    console.error(`Breed "${breedName}" not found.`);
+    return;
+  }
+
+  // Construct options object with the specified breed name
+  const options = {
+    url: `https://api.thecatapi.com/v1/breeds/search?q=${breedName}`,
+    headers: {
+      'x-api-key': 'live_qzxRG3wrpUD155KtQFFw8NHiVMFjPKWkSG5KVbfoxMfPcRpr70pnd19oY9vNJYqY'
+    }
+  };
+
+  // Make the API request with the options object
+  request(options, (error, response, body) => {
+    if (error) {
+      //couldn't connect
+      console.error('Error: ', error);
+      if (response && response.statusCode !== 200) {
+        console.error(`Could not establish a connection. ${response.statusCode}`);
+      }
+    } else {
+      const data = JSON.parse(body);
+      // Check if it's an object
+      if (Array.isArray(data) && data.length === 0) {
+        //access the data array see if anything was returned
+        console.error(`No matching names were returned for your query: ${breedName}`);
+      } else {
+        //if something as returned matching query, then return info in data arr
+        const breedInfo = data[0];
+        console.log(`${breedInfo.name}:\n${breedInfo.description}`);
+        // Define and use the callback function here if needed
+        // cBFN(data[0].description);
+      }
+    }
+  });
+});
+
+
+//Keeping previous attempts to understand my learning process. 
+
+/*const request = require('request');
 
 // Check if the user provided a breed name as a command-line argument
 if (process.argv.length < 3) {
@@ -26,38 +93,38 @@ request(apiUrl, function (error, response, body) {
     return;
   }
 
-  // Display information about the breed
-//   const breedInfo = data[0];
-//   console.log(`${breedInfo.name}:\n${breedInfo.description}`);
-// });
-// request('https://api.thecatapi.com/v1/breeds/search?q=sib', function (error, response, body) {
-//   const data = JSON.parse(body);
-//   let results = data[0];
-//   console.log('Breed Name: ', results.name); // only returns siberian. 
-  //console.log(results);//entire data array returned 
-  //console.log('weight', results.weight);// works retrieve the parsed data array from the object to manipulate and acces the key.values.
-  // console.log(data); //undefined
-  // console.log(typeof data); //object
-  // console.error('error; ', error);
-  // console.log('statusCode: ', response && response.statusCode);
-  // console.log('body : ', body);
-  //console.log(typeof body); // returns vagrant [json_the_cat]> node breedfetcher.js
-  //string
-
 });
 
 //passing a specific breed (key), to return breed (values)
 //eed to use the options obj specifically to make a custom header
-const options = (url,(breed, cBFN) => {
+const options = {
     url: `https://api.thecatapi.com/v1/breeds/search?q=${breed}`,
     headers: 
     {
-  x-api-key:'live_qzxRG3wrpUD155KtQFFw8NHiVMFjPKWkSG5KVbfoxMfPcRpr70pnd19oY9vNJYqY'
+  'x-api-key':'live_qzxRG3wrpUD155KtQFFw8NHiVMFjPKWkSG5KVbfoxMfPcRpr70pnd19oY9vNJYqY'
     }
-  });
+  };
 
+request(options, (error, response, body), cBFN => {
+  if (error) {
+    console.error('Error: ', error);
+    if (response && response.statusCode !== 200) {
+      return cBFN(`Could not establish a connection. ${response.statusCode}`);
+    }
+  } else {
+    const data = JSON.parse(body);
+    // Check if it's an object
+    if (Array.isArray(data) && data.length === 0) {
+      return cBFN(`No matching names were returned for your query: ${breed}`);
+    } else {
+        const breedInfo = data[0];
+        console.log(`${breedInfo.name}:\n${breedInfo.description}`);
+        cBFN(data[0].description);
+    }
+  }
+}); */
 
-request(options,(error, response, body) {
+/*
   const data = JSON.parse(body);
   let results = data;
   console.log('Breed Name: ', results.name);
@@ -117,3 +184,22 @@ Access the first entry in the data array and print out the description for the u
 
 //3
 //Access the first entry in the data array and print out the description for the user.
+
+
+  // Display information about the breed
+//   const breedInfo = data[0];
+//   console.log(`${breedInfo.name}:\n${breedInfo.description}`);
+// });
+// request('https://api.thecatapi.com/v1/breeds/search?q=sib', function (error, response, body) {
+//   const data = JSON.parse(body);
+//   let results = data[0];
+//   console.log('Breed Name: ', results.name); // only returns siberian. 
+  //console.log(results);//entire data array returned 
+  //console.log('weight', results.weight);// works retrieve the parsed data array from the object to manipulate and acces the key.values.
+  // console.log(data); //undefined
+  // console.log(typeof data); //object
+  // console.error('error; ', error);
+  // console.log('statusCode: ', response && response.statusCode);
+  // console.log('body : ', body);
+  //console.log(typeof body); // returns vagrant [json_the_cat]> node breedfetcher.js
+  //string
