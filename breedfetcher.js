@@ -1,7 +1,39 @@
 const request = require('request');
-request('https://api.thecatapi.com/v1/breeds/search?q=sib', function (error, response, body) {
+
+// Check if the user provided a breed name as a command-line argument
+if (process.argv.length < 3) {
+  console.error('Please provide a breed name as a command-line argument.');
+  process.exit(1);
+}
+
+const breedName = process.argv[2];
+
+// Construct the API request URL with the specified breed name
+const apiUrl = `https://api.thecatapi.com/v1/breeds/search?q=${encodeURIComponent(breedName)}`;
+
+// Make the API request
+request(apiUrl, function (error, response, body) {
+  if (error) {
+    console.error('Error:', error);
+    return;
+  }
+
   const data = JSON.parse(body);
-  let results = data[0];
+
+  // Check if the breed was found
+  if (data.length === 0) {
+    console.error(`Breed "${breedName}" not found.`);
+    return;
+  }
+
+  // Display information about the breed
+//   const breedInfo = data[0];
+//   console.log(`${breedInfo.name}:\n${breedInfo.description}`);
+// });
+// request('https://api.thecatapi.com/v1/breeds/search?q=sib', function (error, response, body) {
+//   const data = JSON.parse(body);
+//   let results = data[0];
+//   console.log('Breed Name: ', results.name); // only returns siberian. 
   //console.log(results);//entire data array returned 
   //console.log('weight', results.weight);// works retrieve the parsed data array from the object to manipulate and acces the key.values.
   // console.log(data); //undefined
@@ -13,6 +45,27 @@ request('https://api.thecatapi.com/v1/breeds/search?q=sib', function (error, res
   //string
 
 });
+
+//passing a specific breed (key), to return breed (values)
+//eed to use the options obj specifically to make a custom header
+const options = (url,(breed, cBFN) => {
+    url: `https://api.thecatapi.com/v1/breeds/search?q=${breed}`,
+    headers: 
+    {
+  x-api-key:'live_qzxRG3wrpUD155KtQFFw8NHiVMFjPKWkSG5KVbfoxMfPcRpr70pnd19oY9vNJYqY'
+    }
+  });
+
+
+request(options,(error, response, body) {
+  const data = JSON.parse(body);
+  let results = data;
+  console.log('Breed Name: ', results.name);
+});
+// returning
+// Breed Name:  Siberian
+// Breed Name:  Abyssinian
+
 
 /*
 Implementing in Node
