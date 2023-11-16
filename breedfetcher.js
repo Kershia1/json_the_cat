@@ -3,34 +3,63 @@ const request = require('request');
 
 //handeling and returning fetched data requeted by the user in the CLI Via Index.js
 
+const fetchBreedDescription = (breedName, callback) => {
+  // Construct the API request URL with the specified breed name
+  const apiUrl = `https://api.thecatapi.com/v1/breeds/search?q=${encodeURIComponent(breedName)}`;
+
+  // Make the API request
+  request(apiUrl, function(error, response, body) {
+    if (error) {
+      //console.error('Error:', error);
+      return callback(error, null);
+    }
+    //creates an object
+    const data = JSON.parse(body);
+
+    // Check if the breed was found, if nothing
+    if (data.length === 0) {
+      //console.error(`Breed "${breedName}" not found.`);
+      return callback(`Breed "${breedName}" could not be found.`, null);
+    }
+    //if information is retrived return the 1st breed description value found at this indexed location from the breed key?
+    const description = data[0].description;
+    //if data is not empty
+    // data= the array from earlier
+    //1st element of array
+    //.desc is the accessed property of the 1st returned breed
+    callback(null, description);
+  });
+};
+
+//eslint notes clairified by chatgpt I was very confused about the error
+/*
+vagrant [json_the_cat]> eslint index.js breedfetcher.js
+
+/vagrant/json_the_cat/breedfetcher.js
+  6:1  error  Expected a function expression  func-style
+
+✖ 1 problem (1 error, 0 warnings)
+
+I've used a named function declaration:
+
 function fetchBreedDescription(breedName, callback) {
-// Construct the API request URL with the specified breed name
-const apiUrl = `https://api.thecatapi.com/v1/breeds/search?q=${encodeURIComponent(breedName)}`;
 
-// Make the API request
-request(apiUrl, function(error, response, body) {
-  if (error) {
-    //console.error('Error:', error);
-    return callback(error, null);
-  } 
-  //creates an object
-  const data = JSON.parse(body);
-
-  // Check if the breed was found, if nothing
-  if (data.length === 0) {
-    //console.error(`Breed "${breedName}" not found.`);
-    return callback(`Breed "${breedName}" could not be found.`, null);
-  }
-  //if information is retrived return the 1st breed description value found at this indexed location from the breed key?
-const description = data[0].description;
-//if data is not empty
-// data= the array from earlier
-//1st element of array
-//.desc is the accessed property of the 1st returned breed
-callback(null, description);
-});
+  essentially:
+  func declaration
+  function myFunction() {
+  // function body
 }
+            VS
+expression
+  expected to be:
+  const myFunction = function() {
+  // function body
+};
 
+I can name and just make a const block scoped
+or make an arrow.
+
+*/
 //previous iteration of function
 
 // if (process.argv.length < 3) {
@@ -69,4 +98,4 @@ callback(null, description);
 //     }
 //   });
 
-  module.exports = fetchBreedDescription;
+module.exports = fetchBreedDescription;
