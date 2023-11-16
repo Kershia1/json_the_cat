@@ -1,33 +1,7 @@
 
 const request = require('request');
 
-// Check if the user provided a breed name as a command-line argument
-if (process.argv.length < 3) {
-  console.error('Please provide a breed name as a command-line argument.');
-  process.exit(1);
-}
-
-//access the breedname in url search
-const breedName = process.argv[2];
-
-// Construct the API request URL with the specified breed name
-const apiUrl = `https://api.thecatapi.com/v1/breeds/search?q=${encodeURIComponent(breedName)}`;
-
-// Make the API request
-request(apiUrl, function (error, response, body) {
-  if (error) {
-    console.error('Error:', error);
-    return;
-  }
-
-  //creates an object
-  const data = JSON.parse(body);
-
-  // Check if the breed was found, if nothing 
-  if (data.length === 0) {
-    console.error(`Breed "${breedName}" not found.`);
-    return;
-  }
+//handeling and returning fetched data requeted by the user in the CLI Via Index.js
 
   // Construct options object with the specified breed name
   const options = {
@@ -60,7 +34,6 @@ request(apiUrl, function (error, response, body) {
       }
     }
   });
-});
 
 
 //Keeping previous attempts to understand my learning process. 
@@ -203,3 +176,4 @@ Access the first entry in the data array and print out the description for the u
   // console.log('body : ', body);
   //console.log(typeof body); // returns vagrant [json_the_cat]> node breedfetcher.js
   //string
+  
