@@ -98,4 +98,4 @@ or make an arrow.
 //     }
 //   });
 
-module.exports = fetchBreedDescription;
+module.exports = {fetchBreedDescription};
